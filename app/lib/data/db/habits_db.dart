@@ -30,6 +30,7 @@ class HabitsDatabase {
     const idType = "INTEGER PRIMARY KEY AUTOINCREMENT";
     const titleType = "TEXT NOT NULL";
     const subtitleType = "TEXT";
+    const timeNotificationType = "TEXT";
     const dateDataType = "TEXT";
 
     await db.execute('''
@@ -37,6 +38,7 @@ CREATE TABLE $tableHabits (
   ${HabitFields.id} $idType,
   ${HabitFields.title} $titleType,
   ${HabitFields.subtitle} $subtitleType,
+  ${HabitFields.timeNotification} $timeNotificationType,
   ${HabitFields.dateData} $dateDataType
   )
 ''');

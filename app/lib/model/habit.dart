@@ -2,12 +2,13 @@ const String tableHabits = "habits";
 
 class HabitFields {
   static final List<String> values = [
-    id, title, subtitle, dateData
+    id, title, subtitle, timeNotification, dateData
   ];
 
   static const String id = "_id";
   static const String title = "title";
   static const String subtitle = "subtitle";
+  static const String timeNotification = "timeNotification";
   static const String dateData = "dateData";
 }
 
@@ -15,12 +16,14 @@ class Habit {
   final int? id;
   late String title;
   late String? subtitle;
+  late DateTime? timeNotification;
   late List<DateTime> dateData;
 
   Habit({
     this.id,
     required this.title,
     this.subtitle,
+    this.timeNotification,
     List<DateTime>? dateData,
   }) : dateData = dateData ?? [];
 
@@ -28,11 +31,13 @@ class Habit {
     int? id,
     String? title,
     String? subtitle,
+    DateTime? timeNotification,
     List<DateTime>? dateData,
   }) => Habit(
     id: id ?? this.id,
     title: title ?? this.title,
     subtitle: subtitle ?? this.subtitle,
+    timeNotification: timeNotification ?? this.timeNotification,
     dateData: dateData ?? this.dateData,
   );
 
@@ -54,6 +59,9 @@ class Habit {
       id: json[HabitFields.id] as int?,
       title: json[HabitFields.title] as String,
       subtitle: json[HabitFields.subtitle] as String?,
+      timeNotification: (json[HabitFields.timeNotification] as String) != ""
+        ? DateTime.parse(json[HabitFields.timeNotification] as String)
+        : null,
       dateData: dateDataJson(),
     );
   }
@@ -73,6 +81,7 @@ class Habit {
       HabitFields.id: id,
       HabitFields.title: title,
       HabitFields.subtitle: subtitle,
+      HabitFields.timeNotification: timeNotification == null ? "" : timeNotification!.toIso8601String(),
       HabitFields.dateData: dateDataJson(),
     };
   }

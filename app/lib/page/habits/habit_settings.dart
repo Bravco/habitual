@@ -1,4 +1,5 @@
 import 'package:app/utils.dart' as utils;
+import 'package:app/notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 
@@ -25,6 +26,7 @@ class HabitSettingsPage extends StatefulWidget {
 
 class _HabitSettingsPageState extends State<HabitSettingsPage> {
   bool haveTimeNotification = false;
+  DateTime? timeNotification;
 
   late bool isEditing = widget.habit == null ? false : true;
 
@@ -34,16 +36,31 @@ class _HabitSettingsPageState extends State<HabitSettingsPage> {
   void submit() async {
     if (titleController.text == "" || titleController.text.isEmpty) return;
 
+    int newHabitId = 0;
+
     if (isEditing) {
       widget.habit!.title = titleController.text;
       widget.habit!.subtitle = subtitleController.text == "" ? null : subtitleController.text;
+      widget.habit!.timeNotification = haveTimeNotification ? timeNotification : null;
 
       await HabitsDatabase.instance.update(widget.habit!);
     } else {
-      await HabitsDatabase.instance.create(Habit(
+      Habit newHabit = await HabitsDatabase.instance.create(Habit(
         title: titleController.text,
         subtitle: subtitleController.text == "" ? null : subtitleController.text,
+        timeNotification: haveTimeNotification ? timeNotification : null,
       ));
+      newHabitId = newHabit.id!;
+    }
+
+    if (haveTimeNotification && timeNotification != null) {
+      Notifications.showScheduledNotification(
+        id: widget.habit?.id ?? newHabitId,
+        title: titleController.text,
+        body: subtitleController.text,
+        scheduledDateTime: timeNotification!,
+        daily: true,
+      );
     }
   }
 
@@ -57,6 +74,8 @@ class _HabitSettingsPageState extends State<HabitSettingsPage> {
     if (isEditing) {
       titleController.text = widget.habit!.title;
       subtitleController.text = widget.habit!.subtitle ?? "";
+      haveTimeNotification = widget.habit!.timeNotification != null;
+      if (widget.habit!.timeNotification != null) timeNotification = widget.habit!.timeNotification;
     }
   }
 
@@ -111,7 +130,8 @@ class _HabitSettingsPageState extends State<HabitSettingsPage> {
                   ),
                 ],
               ),
-              Padding(
+              haveTimeNotification
+              ? Padding(
                 padding: const EdgeInsets.only(top: 16),
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 8),
@@ -148,7 +168,9 @@ class _HabitSettingsPageState extends State<HabitSettingsPage> {
                         ],
                       ),
                       TimePickerSpinner(
-                        time: DateTime.now(),
+                        time: isEditing && (widget.habit!.timeNotification != null)
+                          ? timeNotification
+                          : DateTime.now(),
                         spacing: 40,
                         itemWidth: 32,
                         itemHeight: 48,
@@ -166,12 +188,12 @@ class _HabitSettingsPageState extends State<HabitSettingsPage> {
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
                         ),
-                        onTimeChange: (p0) {},
+                        onTimeChange: (p0) => timeNotification = p0,
                       ),
                     ],
                   ),
                 ),
-              ),
+              ) : Container(),
             ],
           )),
         ],

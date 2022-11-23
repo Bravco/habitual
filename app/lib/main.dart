@@ -1,5 +1,7 @@
 import 'package:app/utils.dart' as utils;
+import 'package:app/notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
 
 // Data
 import 'package:app/data/db/habits_db.dart';
@@ -10,6 +12,7 @@ import 'package:app/page/habits/habit_settings.dart';
 import 'package:app/page/profile/profile.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -47,6 +50,14 @@ class _PageState extends State<Page> {
   ];
 
   int pageIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    tz.initializeTimeZones();
+    Notifications.init(initScheduled: true);
+  }
 
   @override
   void dispose() {
