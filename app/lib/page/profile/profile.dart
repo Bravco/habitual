@@ -133,7 +133,8 @@ class ProfilePage extends StatelessWidget {
                 size: 24,
               ),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => page))
+                .then((value) => utils.showInterstitialAd(random: true));
               },
             ),
             const Divider(

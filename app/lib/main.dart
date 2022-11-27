@@ -1,6 +1,7 @@
 import 'package:app/utils.dart' as utils;
 import 'package:app/notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 
 // Data
@@ -13,6 +14,8 @@ import 'package:app/page/profile/profile.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
+
   runApp(const MyApp());
 }
 
@@ -55,6 +58,8 @@ class _PageState extends State<Page> {
   void initState() {
     super.initState();
 
+    utils.createInterstitialAd();
+
     tz.initializeTimeZones();
     Notifications.init(initScheduled: true);
   }
@@ -75,7 +80,10 @@ class _PageState extends State<Page> {
       ? FloatingActionButton(
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) => const HabitSettingsPage()))
-          .then((value) => habitsPageKey.currentState!.refreshHabits());
+          .then((value) {
+            habitsPageKey.currentState!.refreshHabits();
+            utils.showInterstitialAd();
+          });
         },
         elevation: 0,
         focusElevation: 0,
