@@ -1,4 +1,5 @@
 import 'package:app/utils.dart' as utils;
+import 'package:app/notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -338,6 +339,10 @@ class HabitsPageState extends State<HabitsPage> {
         await HabitsDatabase.instance.delete(habit.id as int);
         refreshHabits();
 
+        if (habit.timeNotification != null) {
+          Notifications.cancel(habit.id as int);
+        }
+
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context)
         ..removeCurrentSnackBar()
@@ -356,8 +361,18 @@ class HabitsPageState extends State<HabitsPage> {
             action: SnackBarAction(
               label: "Undo",
               onPressed: () async {
-                await HabitsDatabase.instance.create(newHabit);
+                Habit undoHabit = await HabitsDatabase.instance.create(newHabit);
                 refreshHabits();
+
+                if (undoHabit.timeNotification != null) {
+                  Notifications.showScheduledNotification(
+                    id: undoHabit.id!,
+                    title: undoHabit.title,
+                    body: undoHabit.subtitle ?? "",
+                    scheduledDateTime: undoHabit.timeNotification!,
+                    daily: true,
+                  );
+                }
               },
             ),
           ),
