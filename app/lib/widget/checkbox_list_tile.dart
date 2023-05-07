@@ -71,6 +71,14 @@ class CustomCheckboxListTile extends StatelessWidget {
                       ),
                     )
                     : Container(),
+                    Text(
+                      "DAY STREAK: ${habit.getDayStreak()}",
+                      style: const TextStyle(
+                        color: utils.color10,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ],
                 ),
               ],

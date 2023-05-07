@@ -41,6 +41,30 @@ class Habit {
     dateData: dateData ?? this.dateData,
   );
 
+  int getDayStreak() {
+    List<DateTime> dates = dateData;
+    dates.sort();
+
+    if (dates.isEmpty) return 0;
+    int streak = 1;
+    DateTime previousDate = dates[0];
+
+    for (int i = 1; i < dates.length; i++) {
+      final difference = dates[i].difference(DateTime(
+        previousDate.year, previousDate.month, previousDate.day
+      ));
+      if (difference.inDays == 1) {
+        streak++;
+      } else if (difference.inDays > 1) {
+        // The streak has been broken
+        streak = 1;
+      }
+      previousDate = dates[i];
+    }
+
+    return streak;
+  }
+
   static Habit fromJson(Map<String, Object?> json) {
     List<DateTime> dateDataJson() {
       List<DateTime> temp = [];
